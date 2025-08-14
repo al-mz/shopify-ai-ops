@@ -1,0 +1,74 @@
+{
+  "name": "shopify-ai-ops",
+  "version": "1.0.0",
+  "description": "AI-powered Shopify operations automation using AWS Lambda and CDK",
+  "private": true,
+  "workspaces": [
+    "infrastructure",
+    "services/*",
+    "services/shared"
+  ],
+  "scripts": {
+    "bootstrap": "npm run bootstrap:deps && npm run bootstrap:aws",
+    "bootstrap:deps": "npm install && npm run build:shared",
+    "bootstrap:aws": "cd infrastructure && cdk bootstrap",
+    "build": "npm run build:shared && npm run build:services && npm run build:infra",
+    "build:shared": "cd services/shared && npm run build",
+    "build:services": "npm run build -ws --if-present",
+    "build:infra": "cd infrastructure && npm run build",
+    "test": "npm run test -ws --if-present",
+    "test:unit": "npm run test:unit -ws --if-present",
+    "test:integration": "npm run test:integration -ws --if-present",
+    "lint": "npm run lint -ws --if-present",
+    "format": "prettier --write '**/*.{ts,js,json,md}'",
+    "format:check": "prettier --check '**/*.{ts,js,json,md}'",
+    "deploy:dev": "cd infrastructure && cdk deploy --all --context environment=dev",
+    "deploy:staging": "cd infrastructure && cdk deploy --all --context environment=staging",
+    "deploy:prod": "cd infrastructure && cdk deploy --all --context environment=prod --require-approval broadening",
+    "diff": "cd infrastructure && cdk diff --all",
+    "synth": "cd infrastructure && cdk synth --all",
+    "clean": "npm run clean -ws --if-present && rm -rf node_modules",
+    "logs": "scripts/utils/logs-tail.sh",
+    "webhook:test": "scripts/utils/test-webhook.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/shopify-ai-ops.git"
+  },
+  "keywords": [
+    "shopify",
+    "automation",
+    "aws",
+    "lambda",
+    "cdk",
+    "serverless",
+    "ai-ops"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}
