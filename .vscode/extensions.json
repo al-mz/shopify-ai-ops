@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "amazonwebservices.aws-toolkit-vscode",
+    "orta.vscode-jest",
+    "ms-vscode.vscode-typescript-tsd",
+    "christian-kohler.path-intellisense",
+    "mikestead.dotenv",
+    "eamodio.gitlens",
+    "humao.rest-client",
+    "yzhang.markdown-all-in-one"
+  ]
+}

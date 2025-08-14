@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "shopify-ai-ops",
+    "description": "AI-powered Shopify operations automation"
+  },
+  "aws": {
+    "region": "us-east-1",
+    "tags": {
+      "Application": "ShopifyAIOps",
+      "ManagedBy": "CDK",
+      "Environment": "dev"
+    }
+  },
+  "lambda": {
+    "runtime": "NODEJS_18_X",
+    "timeout": 30,
+    "memorySize": 512,
+    "architecture": "ARM_64",
+    "tracing": true,
+    "logRetention": 7,
+    "environment": {
+      "NODE_OPTIONS": "--enable-source-maps",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+    }
+  },
+  "api": {
+    "throttle": {
+      "rateLimit": 1000,
+      "burstLimit": 2000
+    },
+    "cors": {
+      "allowOrigins": ["*"],
+      "allowMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "allowHeaders": ["Content-Type", "Authorization", "X-Shopify-Hmac-SHA256"]
+    }
+  },
+  "monitoring": {
+    "alarms": {
+      "enabled": true,
+      "treatMissingData": "NOT_BREACHING"
+    },
+    "dashboards": {
+      "enabled": true
+    },
+    "logs": {
+      "level": "INFO",
+      "format": "JSON"
+    }
+  },
+  "security": {
+    "encryption": {
+      "atRest": true,
+      "inTransit": true
+    },
+    "secretsRotation": {
+      "enabled": false,
+      "interval": 90
+    }
+  },
+  "networking": {
+    "vpc": {
+      "maxAzs": 2,
+      "natGateways": 1
+    }
+  }
+}
