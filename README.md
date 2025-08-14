@@ -94,43 +94,9 @@ make deploy-dev
 3. Add webhook to desired channel
 4. Copy webhook URL to `.env` file
 
-## Costs
-
-| Usage | Monthly Cost |
-|-------|-------------|
-| POC (10 orders) | ~$0.01 |
-| Small business (1K orders) | ~$0.50 |
-| Growing business (10K orders) | ~$5.00 |
-
-*Based on AWS Lambda pricing with 1-week log retention*
-
 ## Requirements
 
 - AWS account with CLI configured
 - Node.js 18+
 - Shopify Partner account (for development store)
 - Slack workspace admin access
-
-## Deployment Environments
-
-- **Development**: Local testing with development store
-- **Staging**: Pre-production environment
-- **Production**: Live Shopify store integration
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and add tests
-4. Run `npm test` and `npm run lint`
-5. Submit a pull request
-
-## License
-
-MIT
-
-## Support
-
-- 📖 [Documentation](./docs/)
-- 🐛 [Issues](../../issues)
-- 💬 [Discussions](../../discussions)
