@@ -132,11 +132,11 @@ build_project() {
     log_info "Building the project..."
     
     # Build Lambda function
-    log_info "Building Lambda function..."
-    cd services/hello-world-hook
+    log_info "Building order notification handler..."
+    cd services/order-notification-handler
     
     if [[ ! -f package.json ]]; then
-        log_error "package.json not found in services/hello-world-hook"
+        log_error "package.json not found in services/order-notification-handler"
         exit 1
     fi
     

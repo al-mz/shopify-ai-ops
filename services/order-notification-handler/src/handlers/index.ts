@@ -80,7 +80,7 @@ export const handler = async (
   });
   
   // Format Slack message
-  const text = `🧪 Hello World: Order *${body.name || "?"}* total $${body.total || "0"} (id: ${body.orderId || "N/A"})`;
+  const text = `📦 New Order: ${body.name || "Unknown"} • $${body.total || "0"} • ID: ${body.orderId || "N/A"}`;
   
   // Post to Slack
   try {

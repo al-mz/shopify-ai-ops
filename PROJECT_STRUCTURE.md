@@ -71,7 +71,7 @@ shopify-ai-ops/
 │
 ├── shopify-flows/                    # Shopify Flow configurations
 │   ├── flows/                       # Flow definition files
-│   │   ├── hello-world/            # Hello World flow
+│   │   ├── order-notifications/    # Order notification flow
 │   │   │   ├── flow.json           # Flow configuration
 │   │   │   ├── README.md           # Flow documentation
 │   │   │   └── test-payload.json   # Test webhook payload

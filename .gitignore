@@ -177,3 +177,6 @@ docker-compose.override.yml
 tmp/
 temp/
 .tmp/
+
+# Claude
+.claude/

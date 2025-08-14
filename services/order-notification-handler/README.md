@@ -1,8 +1,8 @@
-# Hello World Hook
+# Order Notification Handler
 
 ## Overview
 
-AWS Lambda function that receives webhooks from Shopify Flow, validates authentication, and forwards messages to Slack.
+AWS Lambda function that processes Shopify order creation events from Shopify Flow, validates authentication, and sends formatted notifications to Slack.
 
 ## Quick Start
 
@@ -34,4 +34,7 @@ AWS Lambda function that receives webhooks from Shopify Flow, validates authenti
 
 The function expects POST requests with:
 - Authorization header: `Bearer <FLOW_SHARED_SECRET>`
-- JSON body with order data from Shopify Flow
+- JSON body with order data from Shopify Flow containing:
+  - `orderId`: Shopify order ID
+  - `name`: Order number (e.g., "#1002")
+  - `total`: Order total amount

@@ -11,7 +11,7 @@ AWS CDK infrastructure for Shopify AI Ops project.
 
 2. **Build Lambda function**
    ```bash
-   cd ../services/hello-world-hook
+   cd ../services/order-notification-handler
    npm install
    npm run build
    cd ../infrastructure

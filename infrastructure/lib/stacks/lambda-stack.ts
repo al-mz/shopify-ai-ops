@@ -49,10 +49,10 @@ export class LambdaStack extends cdk.Stack {
     });
 
     // Create the Lambda function
-    const helloWorldHook = new lambda.Function(this, 'HelloWorldHook', {
+    const orderNotificationHandler = new lambda.Function(this, 'OrderNotificationHandler', {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'handlers/index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../../services/hello-world-hook/dist')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../../services/order-notification-handler/dist')),
       timeout: cdk.Duration.seconds(30),
       memorySize: 128,
       logRetention: logs.RetentionDays.ONE_WEEK,
@@ -65,19 +65,19 @@ export class LambdaStack extends cdk.Stack {
         NODE_OPTIONS: '--enable-source-maps',
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
       },
-      description: 'Shopify Flow webhook handler that posts to Slack'
+      description: 'Shopify order notification handler for Slack integration'
     });
 
     // Create encrypted log group
-    new logs.LogGroup(this, 'HelloWorldHookLogGroup', {
-      logGroupName: `/aws/lambda/${helloWorldHook.functionName}`,
+    new logs.LogGroup(this, 'OrderNotificationHandlerLogGroup', {
+      logGroupName: `/aws/lambda/${orderNotificationHandler.functionName}`,
       retention: logs.RetentionDays.ONE_WEEK,
       encryptionKey: logEncryptionKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     // Create Function URL
-    const functionUrl = helloWorldHook.addFunctionUrl({
+    const functionUrl = orderNotificationHandler.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
       cors: {
         allowCredentials: false,
@@ -92,7 +92,7 @@ export class LambdaStack extends cdk.Stack {
     // Output the Function URL
     new cdk.CfnOutput(this, 'FunctionUrl', {
       value: functionUrl.url,
-      description: 'Lambda Function URL for Shopify Flow webhook'
+      description: 'Lambda Function URL for Shopify order notifications'
     });
   }
 }

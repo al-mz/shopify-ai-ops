@@ -6,94 +6,146 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Shopify AI Ops** is a serverless pipeline project that connects Shopify Flow to AWS Lambda and Slack for automated order processing and notifications. The project follows a multi-week development approach, starting with a minimal MVP foundation in Week 0.
 
-## Project Goals
+**Current Status**: Week 0 MVP is complete and deployed. The order notification handler is live and processing real Shopify orders.
 
-This is a proof-of-concept (POC) implementation that demonstrates:
-- **Pipeline Architecture**: Shopify Flow → HTTPS → AWS Lambda (Function URL) → Slack
-- **Serverless Foundation**: AWS Lambda-based processing without infrastructure management
-- **Authentication**: Bearer token security between components
-- **Real-time Notifications**: Automated Slack notifications for order events
-- **Scalable Architecture**: Foundation for future AI-powered features
+## Architecture Overview
 
-## Development Phases
+The system implements a serverless event-driven architecture:
 
-### Week 0 - MVP Foundation (Current Phase)
-- **Objective**: Stand up the reusable pipeline with AWS components
-- **Scope**: Hello-world Lambda function that receives Shopify Flow webhooks and posts to Slack
-- **Architecture**: 
-  - AWS Lambda (Node.js 18 or Python 3.12) with Function URL
-  - Shopify Flow with "Order created" trigger
-  - Slack Incoming Webhook integration
-  - Bearer token authentication
-  - CloudWatch Logs for debugging
+```
+Shopify Store → Shopify Flow → AWS Lambda (Function URL) → Slack
+```
 
-### Future Weeks
-- Week 1+: Add AI integration for returns processing with Admin API GraphQL calls
-- Enhanced error handling and performance monitoring
+**Key Components:**
+- **Order Notification Handler**: Lambda function processing Shopify order events
+- **CDK Infrastructure**: Infrastructure as Code defining AWS resources
+- **Monorepo Structure**: NPM workspaces with shared libraries and multiple services
+- **Deployment Automation**: Scripts for environment-specific deployments
+
+## Common Commands
+
+### Development Workflow
+```bash
+# Initial setup
+make bootstrap               # Install deps + CDK bootstrap
+npm run build               # Build all packages (shared → services → infrastructure)
+
+# Development
+npm test                    # Run all tests
+npm run test:unit          # Unit tests only
+make test-e2e              # End-to-end tests
+npm run lint               # Linting
+npm run format             # Code formatting
+
+# Service-specific (from service directory)
+cd services/order-notification-handler
+npm run build              # Build single service
+npm run watch              # Watch mode for development
+npm test                   # Service-specific tests
+```
+
+### Deployment
+```bash
+# Quick deployment (uses custom script)
+./scripts/deploy/deploy.sh  # Full automated deployment with validation
+
+# CDK-based deployment
+make deploy-dev             # Deploy to development
+make deploy-staging         # Deploy to staging  
+make deploy-prod           # Deploy to production (requires approval)
+
+# Infrastructure management
+make diff                  # Show deployment changes
+make synth                 # Generate CloudFormation templates
+```
+
+### Testing and Debugging
+```bash
+make logs                  # Tail CloudWatch logs
+make webhook-test          # Test webhook locally
+npm run logs               # Alternative log tailing
+```
 
 ## Repository Structure
 
+This is a **monorepo** using NPM workspaces with the following key areas:
+
 ```
 shopify-ai-ops/
-├── docs/
-│   └── claude/
-│       └── week0/
-│           ├── project-goals.md        # Week 0 technical objectives
-│           └── week0-mvp-foundation-prd.md  # Detailed PRD with 6 stories
-├── apps/                              # Lambda functions (to be created)
-├── flows/                             # Shopify Flow exports (to be created) 
-└── CLAUDE.md                          # This file
+├── services/
+│   ├── order-notification-handler/     # Main Lambda function (Node.js 18)
+│   └── shared/                          # Shared libraries and types
+├── infrastructure/                      # AWS CDK infrastructure definitions
+├── scripts/deploy/                      # Deployment automation
+└── docs/claude/week0/                   # Technical specifications
 ```
 
-## Key Technologies & Architecture
+## Technical Implementation
 
-- **AWS Lambda**: Serverless compute with Function URL (no API Gateway needed for MVP)
-- **Shopify Flow**: Native Shopify automation platform for webhooks
-- **Node.js 18**: Preferred runtime for Lambda functions
-- **Bearer Token Authentication**: Simple but secure server-to-server auth
-- **CloudWatch**: Logging and monitoring
+### Lambda Function Architecture
+The `order-notification-handler` follows these patterns:
+- **Structured Logging**: JSON logs with request correlation IDs
+- **Environment Variable Validation**: Fails fast if required secrets missing
+- **Bearer Token Authentication**: Validates `FLOW_SHARED_SECRET` on every request
+- **Error Handling**: Returns proper HTTP status codes (400, 401, 500, 502)
+- **Slack Integration**: Posts formatted order notifications via webhook
 
-## Development Workflow
+### CDK Infrastructure Patterns
+- **KMS Encryption**: CloudWatch logs encrypted with auto-rotating keys
+- **Function URLs**: Direct HTTPS access without API Gateway
+- **Log Retention**: 1-week retention for cost optimization
+- **Environment-Specific**: Supports dev/staging/prod deployments
 
-Based on the PRD, development follows 6 main stories:
-1. **AWS Lambda Setup**: CDK-based infrastructure with Function URL
-2. **Slack Integration**: Incoming Webhooks configuration  
-3. **Shopify Flow Configuration**: Order creation triggers with HTTP actions
-4. **Security Implementation**: Bearer token auth and monitoring
-5. **Repository Structure**: Documentation and code organization
-6. **Testing & Validation**: End-to-end testing with success criteria
+### Security Implementation
+- **Secrets Management**: Environment variables for sensitive data (never hardcoded)
+- **Request Validation**: Bearer token + JSON schema validation
+- **Log Security**: No sensitive data logged to CloudWatch
+- **HTTPS Only**: All communication encrypted in transit
 
-## Security Considerations
+## Environment Configuration
 
-- **Environment Variables**: Store secrets (FLOW_SHARED_SECRET, SLACK_WEBHOOK_URL) in Lambda env vars
-- **Public Function URL**: Protected by Bearer token validation in code
-- **No Sensitive Logging**: Avoid logging secrets to CloudWatch
-- **Token Rotation**: Establish regular secret rotation procedures
+The system requires these environment variables:
 
-## Success Criteria
+```bash
+# Required for deployment
+FLOW_SHARED_SECRET=<32-char-secret>     # Generate with: openssl rand -hex 32
+SLACK_WEBHOOK_URL=<slack-webhook-url>   # From Slack app incoming webhook
+AWS_REGION=<aws-region>                 # Target deployment region
+```
 
-- End-to-end pipeline completes in ≤15 seconds
-- Authentication properly rejects invalid tokens (401 response)
-- One-shot deployment in <30 minutes via AWS Console
-- Flow portability through JSON export/import
-- Complete documentation enabling reproduction
+Copy `.env.example` to `.env` and configure before deployment.
 
-## Current State
+## Deployment Architecture
 
-This repository is in the initial setup phase. The documentation in `docs/claude/week0/` provides the complete technical specification for implementing the Week 0 MVP Foundation.
+**Development Flow:**
+1. **Local Development**: Build and test services individually
+2. **Validation**: Automated script validates prerequisites and environment
+3. **CDK Bootstrap**: One-time setup per AWS account/region
+4. **Stack Deployment**: Lambda function + infrastructure deployed together
+5. **Verification**: Function URL returned for Shopify Flow configuration
 
-## Next Steps for Implementation
+**Infrastructure Components:**
+- Lambda Function with Function URL
+- KMS Key for log encryption
+- CloudWatch Log Group with retention policy
+- IAM roles and policies (managed by CDK)
 
-1. Create AWS Lambda function with CDK (preferred) or AWS Console
-2. Set up Slack Incoming Webhook integration
-3. Configure Shopify Flow with order creation triggers
-4. Implement Bearer token authentication
-5. Create proper repository structure with documentation
-6. Perform end-to-end testing and validation
+## Testing Strategy
 
-## Notes for Future Development
+**Unit Tests**: Jest-based testing for Lambda handlers
+- Mock AWS services and external APIs
+- Test authentication, validation, and error handling
+- Structured logging verification
 
-- The Lambda pattern established in Week 0 is designed to be reusable for future functions
-- Repository structure supports scaling to multiple apps and flows
-- Monitoring foundation with CloudWatch is ready for production enhancement
-- Authentication model can extend to Admin API integration in later phases
+**Integration Tests**: End-to-end pipeline testing
+- Real Shopify Flow → Lambda → Slack integration
+- Environment-specific testing
+
+## Development Patterns
+
+When adding new Lambda functions:
+1. **Follow Service Structure**: Use `order-notification-handler` as template
+2. **Shared Libraries**: Leverage `services/shared` for common utilities
+3. **CDK Patterns**: Extend existing stack patterns for consistency
+4. **Testing**: Maintain unit test coverage with integration tests
+5. **Environment Variables**: Always validate required configuration

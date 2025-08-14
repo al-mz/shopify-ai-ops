@@ -1,7 +1,7 @@
 {
-  "name": "hello-world-hook",
+  "name": "order-notification-handler",
   "version": "1.0.0",
-  "description": "Shopify Flow webhook handler that posts to Slack",
+  "description": "Shopify order notification handler for Slack integration",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -10,7 +10,7 @@
     "clean": "rm -rf dist",
     "prebuild": "npm run clean"
   },
-  "keywords": ["shopify", "lambda", "slack", "webhook"],
+  "keywords": ["shopify", "lambda", "slack", "orders", "notifications"],
   "author": "",
   "license": "MIT",
   "devDependencies": {

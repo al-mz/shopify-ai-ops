@@ -8,7 +8,7 @@ process.env.SLACK_WEBHOOK_URL = 'https://hooks.slack.com/test';
 // Mock fetch globally
 global.fetch = jest.fn();
 
-describe('hello-world-hook handler', () => {
+describe('order-notification-handler', () => {
   const mockContext: Context = {
     awsRequestId: 'test-request-id',
     callbackWaitsForEmptyEventLoop: false,
