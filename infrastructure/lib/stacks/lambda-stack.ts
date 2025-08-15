@@ -50,7 +50,7 @@ export class LambdaStack extends cdk.Stack {
 
     // Create the Lambda function
     const orderNotificationHandler = new lambda.Function(this, 'OrderNotificationHandler', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'handlers/index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../../../services/order-notification-handler/dist')),
       timeout: cdk.Duration.seconds(30),
